@@ -7,6 +7,13 @@ import '../../features/public_booking/psychologist_directory_screen.dart';
 import '../../features/public_booking/booking_flow_screen.dart';
 import '../../features/admin_portal/admin_dashboard.dart';
 import '../../features/admin_portal/psychologist_crud_screen.dart';
+import '../../features/psychologist_portal/presentation/screens/login_screen.dart';
+import '../../features/psychologist_portal/presentation/screens/dashboard_screen.dart';
+import '../../features/psychologist_portal/presentation/screens/availability_screen.dart';
+import '../../features/psychologist_portal/presentation/screens/sessions_screen.dart';
+import '../../features/psychologist_portal/presentation/screens/profile_screen.dart';
+import '../../features/psychologist_portal/presentation/psychologist_portal_shell.dart';
+import '../../features/psychologist_portal/psychologist_portal_providers.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -61,6 +68,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 }
 
 final goRouterProvider = Provider<GoRouter>((ref) {
+  final isLoggedIn = ref.watch(tokenProvider) != null;
   return GoRouter(
     initialLocation: '/',
     routes: [
@@ -91,6 +99,46 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/admin/psychologists',
         builder: (context, state) => const PsychologistCrudScreen(),
       ),
+      GoRoute(
+        path: '/psychologist/login',
+        builder: (context, state) => const PsychologistLoginScreen(),
+      ),
+      ShellRoute(
+        builder: (context, state, child) => PsychologistPortalShell(
+          location: state.uri.toString(),
+          child: child,
+        ),
+        routes: [
+          GoRoute(
+            path: '/psychologist/dashboard',
+            builder: (context, state) => const PsychologistDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/psychologist/availability',
+            builder: (context, state) => const AvailabilityManagementScreen(),
+          ),
+          GoRoute(
+            path: '/psychologist/sessions',
+            builder: (context, state) => const SessionsScreen(),
+          ),
+          GoRoute(
+            path: '/psychologist/profile',
+            builder: (context, state) => const ProfileScreen(),
+          ),
+        ],
+      ),
     ],
+    redirect: (context, state) {
+      final location = state.uri.toString();
+      final isPsychologistRoute = location.startsWith('/psychologist');
+      final isLoginRoute = location == '/psychologist/login';
+      if (isPsychologistRoute && !isLoginRoute && !isLoggedIn) {
+        return '/psychologist/login';
+      }
+      if (isLoginRoute && isLoggedIn) {
+        return '/psychologist/dashboard';
+      }
+      return null;
+    },
   );
 });

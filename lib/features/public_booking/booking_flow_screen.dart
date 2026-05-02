@@ -71,8 +71,10 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
         onStepCancel: () {
           if (_currentStep > 0) {
             setState(() => _currentStep--);
-          } else {
+          } else if (Navigator.canPop(context)) {
             context.pop();
+          } else {
+            context.go('/');
           }
         },
         controlsBuilder: (context, details) {
