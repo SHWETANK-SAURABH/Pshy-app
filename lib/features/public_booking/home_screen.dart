@@ -18,6 +18,11 @@ class PublicHomeScreen extends StatelessWidget {
             onPressed: () => context.go('/admin'),
             tooltip: 'Admin Portal',
           ),
+          IconButton(
+            icon: const Icon(Icons.psychology_outlined),
+            onPressed: () => context.go('/psychologist/login'),
+            tooltip: 'Psychologist Portal',
+          ),
         ],
       ),
       body: SingleChildScrollView(
